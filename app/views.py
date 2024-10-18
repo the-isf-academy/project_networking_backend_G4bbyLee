@@ -29,6 +29,7 @@ def new_move(args):
 
     return {'exercise/stretch': new_move.json_response()}
 
+
 @route_get(BASE_URL + 'one', args={'id': int})
 def one_move(args):
 
@@ -40,23 +41,57 @@ def one_move(args):
     else:
         return {'error': 'no exercise/stretch exists'}
 
-@route_get(BASE_URL + 'category', args={'category': str})
-def category(args):
-    if RockClimb.objects.filter(category=args['category']).exists():
-        category = RockClimb.objects.append(category=args['category'])
 
-        return {'category': category.json_response()}
+@route_get(BASE_URL + 'category', args={'category_filter': str})
+def category(args):
+    category_filter = []
+
+    if RockClimb.objects.filter(category__contains=['category_filter']).exists():
+        for climb in RockClimb.objects.filter(category__contains=(args['category_filter'])):
+            category_filter.append(climb.json_response())
+        
+        return {'category': category_filter}
 
     else:
-        return {'error': 'nothing available'}
+        return {'error': 'no category exists'}
+
 
 @route_post(BASE_URL + 'edit', args={'id': int, 'name': str, 'category': str, 'instructions': str, 'extra': str})
-def edit(args):
+def change_information(args):
     if RockClimb.objects.filter(id=args['id']).exists():
-        edit = RockClimb.objects.get(id=args['id'])
-        edit.edit(args['name'])
+        change_information = RockClimb.objects.get(id=args['id'])
+        change_information.change_information(args['name'])
+        change_information.change_information(args['category'])
+        change_information.change_information(args['instructions'])
+        change_information.change_information(args['extra'])
 
-        return{'new exercise/stretch': edit.json_response()}
+        return{'new exercise/stretch': change_information.json_response()}
 
     else:
         return {'error': 'no exercise/stretch exists'}
+
+
+@route_post(BASE_URL + 'likes', args={'id': int})
+def likes(args):
+    if RockClimb.objects.filter(id=args['id']).exists():
+        likes = RockClimb.objects.get(id=args['id'])
+        likes.increase_likes()
+
+        return {'fortune': likes.json_response()}
+
+    else:
+        return {'error': 'no fortune exists'}
+
+
+@route_get(BASE_URL + 'search', args={'keyword': str})
+def search(args):
+    keyword = []
+
+    if RockClimb.objects.filter(instructions__contains=['keyword']).exists():
+        for climb in RockClimb.objects.filter(instructions__contains=(args['keyword'])):
+            keyword.append(climb.json_response())
+    
+        return {'results': keyword}
+
+    else:
+        return {'error': 'there are no results'}
