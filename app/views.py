@@ -1,14 +1,14 @@
 # views.py
 
 from banjo.urls import route_get, route_post
-from .models import RockClimb
+from .models import Exercise
 from settings import BASE_URL
 
 @route_get(BASE_URL + 'all')
 def all_moves(args):
     all_list = []
 
-    for climb in RockClimb.objects.all():
+    for climb in Exercise.objects.all():
         all_list.append(climb.json_response())
 
     return {'all excercises and stretches':all_list}
@@ -16,7 +16,7 @@ def all_moves(args):
 
 @route_post(BASE_URL + 'new', args={'name':str, 'category': str, 'instructions': str, 'extra': str})
 def new_move(args):
-    new_move = RockClimb(
+    new_move = Exercise(
         name = args['name'],
         category = args['category'],
         instructions = args['instructions'],
@@ -33,8 +33,8 @@ def new_move(args):
 @route_get(BASE_URL + 'one', args={'id': int})
 def one_move(args):
 
-    if RockClimb.objects.filter(id=args['id']).exists():
-        one_move = RockClimb.objects.get(id=args['id'])
+    if Exercise.objects.filter(id=args['id']).exists():
+        one_move = Exercise.objects.get(id=args['id'])
 
         return {'exercise/stretch': one_move.json_response()}
 
@@ -46,8 +46,8 @@ def one_move(args):
 def category(args):
     category_filter = []
 
-    if RockClimb.objects.filter(category__contains=['category_filter']).exists():
-        for climb in RockClimb.objects.filter(category__contains=(args['category_filter'])):
+    if Exercise.objects.filter(category__contains=args['category_filter']).exists():
+        for climb in Exercise.objects.filter(category__contains=(args['category_filter'])):
             category_filter.append(climb.json_response())
         
         return {'category': category_filter}
@@ -58,8 +58,8 @@ def category(args):
 
 @route_post(BASE_URL + 'edit', args={'id': int, 'name': str, 'category': str, 'instructions': str, 'extra': str})
 def change_information(args):
-    if RockClimb.objects.filter(id=args['id']).exists():
-        change_information = RockClimb.objects.get(id=args['id'])
+    if Exercise.objects.filter(id=args['id']).exists():
+        change_information = Exercise.objects.get(id=args['id'])
         change_information.change_information(args['name'])
         change_information.change_information(args['category'])
         change_information.change_information(args['instructions'])
@@ -73,22 +73,22 @@ def change_information(args):
 
 @route_post(BASE_URL + 'likes', args={'id': int})
 def likes(args):
-    if RockClimb.objects.filter(id=args['id']).exists():
-        likes = RockClimb.objects.get(id=args['id'])
+    if Exercise.objects.filter(id=args['id']).exists():
+        likes = Exercise.objects.get(id=args['id'])
         likes.increase_likes()
 
-        return {'fortune': likes.json_response()}
+        return {'likes': likes.json_response()}
 
     else:
-        return {'error': 'no fortune exists'}
+        return {'error': 'no exercise/stretch exists'}
 
 
 @route_get(BASE_URL + 'search', args={'keyword': str})
 def search(args):
     keyword = []
 
-    if RockClimb.objects.filter(instructions__contains=['keyword']).exists():
-        for climb in RockClimb.objects.filter(instructions__contains=(args['keyword'])):
+    if Exercise.objects.filter(name__contains=args['keyword']).exists() or Exercise.objects.filter(category__contains=args['keyword']).exists() or Exercise.objects.filter(instructions__contains=args['keyword']).exists() or Exercise.objects.filter(extra__contains=args['keyword']).exists():
+        for climb in Exercise.objects.filter(instructions__contains=(args['keyword'])):
             keyword.append(climb.json_response())
     
         return {'results': keyword}

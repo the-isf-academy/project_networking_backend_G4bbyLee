@@ -2,7 +2,7 @@
 
 from banjo.models import Model, StringField, IntegerField, FloatField, BooleanField
 
-class RockClimb(Model):
+class Exercise(Model):
     name = StringField()
     category = StringField()
     instructions = StringField()
