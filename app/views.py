@@ -35,6 +35,7 @@ def one_move(args):
 
     if Exercise.objects.filter(id=args['id']).exists():
         one_move = Exercise.objects.get(id=args['id'])
+        one_move.increase_views()
 
         return {'exercise/stretch': one_move.json_response()}
 
@@ -59,13 +60,10 @@ def category(args):
 @route_post(BASE_URL + 'edit', args={'id': int, 'name': str, 'category': str, 'instructions': str, 'extra': str})
 def change_information(args):
     if Exercise.objects.filter(id=args['id']).exists():
-        change_information = Exercise.objects.get(id=args['id'])
-        change_information.change_information(args['name'])
-        change_information.change_information(args['category'])
-        change_information.change_information(args['instructions'])
-        change_information.change_information(args['extra'])
+        one_move = Exercise.objects.get(id=args['id'])
+        one_move.change_information(args['name'], args['category'], args['instructions'], args['extra'])
 
-        return{'new exercise/stretch': change_information.json_response()}
+        return{'new exercise/stretch': one_move.json_response()}
 
     else:
         return {'error': 'no exercise/stretch exists'}

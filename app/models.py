@@ -29,8 +29,9 @@ class Exercise(Model):
         self.views += 1
         self.save()
 
-    def change_information(self, name, instructions, extra):
+    def change_information(self, name, category, instructions, extra):
         self.name = name
+        self.category = category
         self.instructions = instructions
         self.extra = extra
         self.likes = 0
